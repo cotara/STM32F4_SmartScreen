@@ -1,8 +1,10 @@
 #include "time_user.h"
 #include "stm32f4xx_pwr.h"
 volatile unsigned int Ticks,TicksUIP=0 ;
-extern uint32_t delay_decrement_1mcs;
-void clock_init(uint32_t IntrPriority)
+volatile uint32_t TimingDelay_1mcs;
+
+
+void timers_init(void)
 {
 
 TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -16,9 +18,9 @@ Ticks = 0;
 //  ***********************************************************************/
    RCC_GetClocksFreq(&RCC_ClocksStatus);
   TIM_InternalClockConfig(TIM2);
-  TIM_TimeBaseStructure.TIM_Prescaler = 42-1;                                //Частота шины 84МГц, но 84000 поставить нельзя потому, что там 2 байта
+  TIM_TimeBaseStructure.TIM_Prescaler = 42-1;                                   //Частота шины 84МГц, но 84000 поставить нельзя потому, что там 2 байта
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_Period = 2*10000;                                    //1мс
+  TIM_TimeBaseStructure.TIM_Period = 1000;                                      //1мс
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM2,&TIM_TimeBaseStructure);
@@ -38,9 +40,9 @@ Ticks = 0;
   RCC_GetClocksFreq(&RCC_ClocksStatus);
   TIM_InternalClockConfig(TIM5);
   
-  TIM_TimeBaseStructure.TIM_Prescaler = 84-1;
+  TIM_TimeBaseStructure.TIM_Prescaler = 56-1;                                   //Смотреть осцилом
   TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-  TIM_TimeBaseStructure.TIM_Period = 100;                                       //100 мкс
+  TIM_TimeBaseStructure.TIM_Period = 1;                                         //1 мкс
   TIM_TimeBaseStructure.TIM_ClockDivision = 0;
   TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;
   TIM_TimeBaseInit(TIM5,&TIM_TimeBaseStructure);
@@ -49,7 +51,7 @@ Ticks = 0;
   TIM_ITConfig(TIM5, TIM_IT_Update, ENABLE);
   TIM_ClearFlag(TIM5,TIM_IT_Update);
    
-  NVIC_SetPriority (TIM5_IRQn, 1);
+  NVIC_SetPriority (TIM5_IRQn, 0);
   NVIC_EnableIRQ (TIM5_IRQn);
   
   TIM_Cmd(TIM5,ENABLE);
@@ -60,12 +62,12 @@ Ticks = 0;
   TIM_TimeBaseInitTypeDef base_timer;
   TIM_TimeBaseStructInit(&base_timer);
   base_timer.TIM_Prescaler = 42000 - 1;                                         //1мс
-  base_timer.TIM_Period = 4*1000;                                              //2 секунд!
+  base_timer.TIM_Period = 4*1000;                                               //2 секунд!
   TIM_TimeBaseInit(TIM6, &base_timer);
 
   TIM_ITConfig(TIM6, TIM_IT_Update, ENABLE);
-  TIM_Cmd(TIM6, ENABLE);
-
+  
+  NVIC_SetPriority (TIM6_DAC_IRQn, 2);
   NVIC_EnableIRQ(TIM6_DAC_IRQn);
 
 /*
@@ -184,3 +186,17 @@ void SysTickStop(void)
     SysTick->CTRL = 0;
 }
 
+/*Задержка в nTime 1 мкс*/
+void delay_1_mcs(volatile uint32_t nTime)
+{
+  TimingDelay_1mcs = nTime;
+
+  while(TimingDelay_1mcs != 0);
+}
+void TimingDelay_1mcs_Decrement(void)
+{
+  if (TimingDelay_1mcs != 0x00)
+  { 
+    TimingDelay_1mcs--;
+  }
+}

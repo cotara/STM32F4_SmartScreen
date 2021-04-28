@@ -14,7 +14,7 @@ int InitUSART2() {
     
   RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
   
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE); //  USART4
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART2, ENABLE); 
   
   GPIO_InitTypeDef      GPIO_InitStructureUSART;
   GPIO_InitStructureUSART.GPIO_Pin = GPIO_Pin_5;
@@ -41,7 +41,7 @@ int InitUSART2() {
   USART_InitStructureUSART.USART_WordLength = USART_WordLength_8b;
   USART_Init(USART2, &USART_InitStructureUSART);
   
-  NVIC_SetPriority (USART2_IRQn, 1);
+  NVIC_SetPriority (USART2_IRQn, 5);
   NVIC_EnableIRQ (USART2_IRQn);
 
   USART_ITConfig(USART2, USART_IT_RXNE, ENABLE);
@@ -72,4 +72,28 @@ void USART2_put_string_2(unsigned char *string, uint32_t l) {
     USART2_put_char(*string++);
     l--;
   }
+}
+
+uint8_t toBuf(uint8_t n){
+  if(rx_wr_index<RX_BUFFER_SIZE){
+    rx_buffer[rx_wr_index]=n;
+    rx_wr_index++;
+    return 0;
+  }
+  else
+   return 1;
+}
+uint8_t fromBuf(uint16_t i){
+    return rx_buffer[i];
+}
+void clear_RXBuffer(void) {
+    for (rx_wr_index=0; rx_wr_index<RX_BUFFER_SIZE; rx_wr_index++)
+        rx_buffer[rx_wr_index] = '\0';
+    rx_wr_index = 0;
+}
+void setRxi(uint16_t i){
+  rx_wr_index = i;
+}
+uint8_t getRxi(void){
+  return rx_wr_index;
 }

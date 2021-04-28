@@ -1,19 +1,21 @@
-"C:\Users\User\Documents\Projects\STM32F4_sender\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c"
+"C:\STM\STMF407 SmartScreen\Libraries\STM32F4xx_StdPeriph_Driver\src\stm32f4xx_dma.c"
 -std=c11
 -ferror-limit=0
 -fbracket-depth=512
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Libraries\STM32F4xx_StdPeriph_Driver\src
+C:\STM\STMF407 SmartScreen\Libraries\STM32F4xx_StdPeriph_Driver\src
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Project\Test\EWARM\..
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Project\Test\EWARM\..\..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..\..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Project\Test\EWARM\..\..\..\board
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..\..\..\board
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Project\Test\EWARM\..\..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..\..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Project\Test\EWARM\..\SDIO_fixed
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..\SDIO_fixed
+-I
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..\DS18B20
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\Core\Include
 -I
@@ -23,15 +25,17 @@ C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\inc
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\inc\c
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Project\Test
+C:\STM\STMF407 SmartScreen\Project\Test
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Libraries\STM32F4xx_StdPeriph_Driver\inc
+C:\STM\STMF407 SmartScreen\Libraries\STM32F4xx_StdPeriph_Driver\inc
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\board
+C:\STM\STMF407 SmartScreen\board
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Libraries\CMSIS\Device\ST\STM32F4xx\Include
+C:\STM\STMF407 SmartScreen\Libraries\CMSIS\Device\ST\STM32F4xx\Include
 -I
-C:\Users\User\Documents\Projects\STM32F4_sender\Project\Test\SDIO_fixed
+C:\STM\STMF407 SmartScreen\Project\Test\SDIO_fixed
+-I
+C:\STM\STMF407 SmartScreen\Project\Test\DS18B20
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\Core\Include
 -I
@@ -186,8 +190,8 @@ C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\DSP\Include
 -D__JMP_BUF_ELEMENT_TYPE__=unsigned long long int
 -D__JMP_BUF_NUM_ELEMENTS__=16
 -D__TID__=0xcf60
--D__VER__=8030002
--D__BUILD_NUMBER__=160
+-D__VER__=8030001
+-D__BUILD_NUMBER__=114
 -D__IAR_SYSTEMS_ICC__=9
 -D_MAX_ALIGNMENT=8
 -D__LITTLE_ENDIAN__=1
@@ -281,8 +285,8 @@ C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\DSP\Include
 -D__HAS_JOINED_TYPES__=1
 -D__HAS_LOCATED_DECLARATION__=1
 -D__HAS_LOCATED_WITH_INIT__=1
--D__IAR_COMPILERBASE__=656389
--D__IAR_COMPILERBASE_STR__=10.4.5.1105
+-D__IAR_COMPILERBASE__=656388
+-D__IAR_COMPILERBASE_STR__=10.4.4.1056
 -D__UNICODE_SOURCE_SUPPORTED__=1
 -D__VTABLE_MEM__=
 -D__PRAGMA_REDEFINE_EXTNAME=1
@@ -333,7 +337,7 @@ C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\DSP\Include
 -DARM_MATH_CM4=1
 -D_DLIB_CONFIG_FILE_HEADER_NAME="C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 8.1\\arm\\inc\\c\\DLib_Config_Full.h"
 -D_DLIB_CONFIG_FILE_STRING="C:\\Program Files (x86)\\IAR Systems\\Embedded Workbench 8.1\\arm\\inc\\c\\DLib_Config_Full.h"
--D__VERSION__="IAR ANSI C/C++ Compiler V8.30.2.160/W32 for ARM"
+-D__VERSION__="IAR ANSI C/C++ Compiler V8.30.1.114/W32 for ARM"
 -D__ICCARM_OLD_DEFINED_VAARGS__=1
 -D__VA_STACK_ALIGN__=8
 -D__CODE_MEMORY_LIST1__()=__CODE_MEM_HELPER1__(__code, 0 )

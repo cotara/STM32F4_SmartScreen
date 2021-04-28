@@ -1,15 +1,9 @@
 ﻿/* Includes ------------------------------------------------------------------*/
 #include "stm32f2xx_it.h"
-
+#include "time_user.h"
 #include "usart_user.h"
 #include "LED_user.h"
-#include "slip.h"
-
-#define LED_ETH 0x01
-#define LED_RX 0x02
-#define LED_TX 0x04
-#define LED_TRIGG 0x08
-
+#include "myNextion.h"
 ////////////////////////////////////////////////////////////////////////
 //extern __IO uint8_t ubRxIndex;/////////////////////
 //extern __IO uint8_t ubTxIndex;/////////////////////
@@ -24,9 +18,8 @@ extern  uint8_t rx_buffer[RX_BUFFER_SIZE];
 extern  uint16_t rx_wr_index, rx_rd_index, rx_counter;
 extern  uint8_t tx_buffer[TX_BUFFER_SIZE];
 extern  uint16_t tx_wr_index, tx_rd_index, tx_counter;
-
-
-uint32_t time_mcs100=0;
+extern uint16_t temper;
+uint32_t mcs=0;
 
 void HardFault_Handler(void) {
     /* Go to infinite loop when Hard Fault exception occurs */
@@ -44,7 +37,6 @@ void SysTick_Handler(void) {
         ubCounter++;
     } else {
         ubCounter = 0x00;
-        //STM_EVAL_LEDToggle(LED1);
     }
 }
 
@@ -53,25 +45,12 @@ void USART2_IRQHandler(void) {
     if (USART_GetITStatus(USART2, USART_IT_RXNE) != RESET) {
         USART_ClearITPendingBit(USART2, USART_IT_RXNE); //очистка признака прерывания
         if ((USART2->SR & (USART_FLAG_FE | USART_FLAG_PE)) == 0) { //нет ошибок
-           
-            //rx_buffer[rx_wr_index++] = (uint8_t) (USART_ReceiveData(USART2) & 0xFF); //считываем данные в буфер, инкрементируя хвост буфера
-            
-            uint8_t byte = USART_ReceiveData(USART2) & 0xFF;
-            slip_new_rx_byte(byte);
-            TIM2->CNT = 0;
-            TIM_Cmd(TIM2, ENABLE); //Запустили таймер
-            /*if(rx_buffer[rx_wr_index-1]=='\n'){          
-              addCommand(rx_buffer,rx_wr_index);
-              rx_wr_index = 0;
-              TIM_Cmd(TIM2, DISABLE);
-            }*/
-            
+            USART_IRQProcessFunc(USART_ReceiveData(USART2) & 0xFF);
         }                                 //Сообщение из USART пришло без ошибок
         else
-           USART_ReceiveData(USART2) & 0xFF;
+           USART_ReceiveData(USART2);
     }
-    
-    
+        
     if (USART_GetITStatus(USART2, USART_IT_ORE_RX) == SET) { //прерывание по переполнению буфера
         USART_ReceiveData(USART2); //в идеале пишем здесь обработчик переполнения буфера, но мы просто сбрасываем этот флаг прерывания чтением из регистра данных.
     }
@@ -92,8 +71,9 @@ void USART2_IRQHandler(void) {
 }
 //Таймер для сброса непринятой посылки
 void TIM2_IRQHandler(void) {
+    //LEDToggle();
     TIM_ClearFlag(TIM2, TIM_IT_Update);
-    rx_wr_index = 0;          //1 мс не приходило нового байта. Значит был затык
+    setRxi(0);                      //1 мс не приходило нового байта. Значит был затык
     TIM_Cmd(TIM2, DISABLE);         //Перестали считать. Ждем следующей посылки.
     TIM2->CNT = 0;
 }
@@ -101,19 +81,21 @@ void TIM2_IRQHandler(void) {
 void TIM5_IRQHandler(void) {
   // Clear TIM5 counter
    TIM_ClearFlag(TIM5, TIM_IT_Update);  
-   
-   time_mcs100++;
-    if (delay_decrement_1mcs != 0) {
-        delay_decrement_1mcs--;
-    }
-    
+   TimingDelay_1mcs_Decrement();
+   //mcs++;
+   //LEDToggle();
+   //if(mcs == 1000000){
+   //  LEDToggle();
+   //  mcs=0;
+   //}
+     
 }
 // каждые 2 секунды генерируется новый буфер
 void TIM6_DAC_IRQHandler() {
     if (TIM_GetITStatus(TIM6, TIM_IT_Update) != RESET) {
-        generateRandomBuffer();
         TIM_ClearITPendingBit(TIM6, TIM_IT_Update);
-        
+        //LEDToggle();
+      
     }
 }
 // таймер для генераци строба

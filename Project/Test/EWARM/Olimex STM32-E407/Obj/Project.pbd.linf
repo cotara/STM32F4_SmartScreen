@@ -2,7 +2,7 @@
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\LED_user.pbi
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\main.pbi
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\misc.pbi
-C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\slip.pbi
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\myNextion.pbi
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\stm32f2xx_it.pbi
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\stm32f4xx_dma.pbi
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\stm32f4xx_exti.pbi
@@ -19,3 +19,4 @@ C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\system_stm32
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\time_user.pbi
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\transp.pbi
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\usart_user.pbi
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\Olimex STM32-E407\Obj\user_ds18b20.pbi

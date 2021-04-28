@@ -15,6 +15,8 @@ C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..\..\..\Libraries\CMSIS\Device\ST
 -I
 C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..\SDIO_fixed
 -I
+C:\STM\STMF407 SmartScreen\Project\Test\EWARM\..\DS18B20
+-I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\Core\Include
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\DSP\Include
@@ -32,6 +34,8 @@ C:\STM\STMF407 SmartScreen\board
 C:\STM\STMF407 SmartScreen\Libraries\CMSIS\Device\ST\STM32F4xx\Include
 -I
 C:\STM\STMF407 SmartScreen\Project\Test\SDIO_fixed
+-I
+C:\STM\STMF407 SmartScreen\Project\Test\DS18B20
 -I
 C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\arm\CMSIS\Core\Include
 -I
