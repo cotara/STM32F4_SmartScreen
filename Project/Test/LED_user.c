@@ -64,9 +64,8 @@ void Blink (int x, int on, int off)
         while (x--)
         {
           LEDOn();
-          DelayResolution100us (on);
+          delay_1_mcs (on);
           LEDOff();
-          DelayResolution100us (off);
-        }
-        
+          delay_1_mcs (off);
+        }  
 }

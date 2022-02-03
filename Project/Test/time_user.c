@@ -1,7 +1,7 @@
 #include "time_user.h"
 #include "stm32f4xx_pwr.h"
 volatile unsigned int Ticks,TicksUIP=0 ;
-volatile uint32_t TimingDelay_1mcs;
+volatile uint32_t TimingDelay_1mcs,TimingDelay_1ms;
 
 
 void timers_init(void)
@@ -87,52 +87,6 @@ Ticks = 0;
 }
 
 
-int RTC_init(void)
-{
-  RTC_TimeTypeDef time = {
-  .RTC_Hours = 0,
-  .RTC_Minutes = 0,
-  .RTC_Seconds = 0,
-  .RTC_H12 = 0
-};
-  /*SysTick to times per second*/
-  SysTickStart(1);
-
-  /* Enable LSE */
- 
-  RCC_APB1PeriphClockCmd(  RCC_APB1Periph_PWR, ENABLE);
-  PWR_BackupAccessCmd(ENABLE);
-  
-  RCC_LSEConfig(RCC_LSE_ON);
-  /* Wait till LSE is ready */
-  int Tick = 0;
-  
-  while (RCC_GetFlagStatus(RCC_FLAG_LSERDY) == RESET)
-  {
-    /*Check Ticks*/
-    if( SysTick->CTRL & (1<<16))
-    {
-      if(6 < ++Tick)
-      {
-        return 1;
-      }
-    }
-  }
-  /* Select LSE as RTC Clock Source */
-  RCC_RTCCLKConfig(RCC_RTCCLKSource_LSE);
-
-  /* Enable RTC Clock */
-  RCC_RTCCLKCmd(ENABLE);
-
-  /* Wait until last write operation on RTC registers has finished */
-  RTC_WaitForSynchro();
-  /*Set time*/
-  RTC_SetTime(RTC_Format_BIN,&time);
- 
-  Tick = 0;
-  return 0;
-}
-
 void update_Time(RTC_TimeTypeDef *time, unsigned char* RTC_time)
 { 
   unsigned char h1,h2,m1,m2,s1,s2;
@@ -159,44 +113,23 @@ void update_Time(RTC_TimeTypeDef *time, unsigned char* RTC_time)
       }
 }
 
-void DelayResolution100us(unsigned int Dly)
-{
-  for(; Dly; Dly--)
-  {
-    for(volatile uint32_t j = DLY_100US; j; j--)
-    {
-    }
-  }
+/*Задержка в nTime 1 мс*/
+void delay_1_ms(volatile uint32_t nTime){
+  TimingDelay_1ms = nTime;
+  while(TimingDelay_1ms != 0);
 }
-void SysTickStart(uint32_t Tick)
-{
-RCC_ClocksTypeDef Clocks;
-volatile uint32_t dummy;
-
-  RCC_GetClocksFreq(&Clocks);
-
-  dummy = SysTick->CTRL;  
-  SysTick->LOAD = (Clocks.HCLK_Frequency/8)/Tick;
-  
-  SysTick->CTRL = 1;
+void TimingDelay_1ms_Decrement(void){
+  if (TimingDelay_1ms != 0x00)
+    TimingDelay_1ms--;
 }
 
-void SysTickStop(void)
-{
-    SysTick->CTRL = 0;
-}
 
 /*Задержка в nTime 1 мкс*/
-void delay_1_mcs(volatile uint32_t nTime)
-{
+void delay_1_mcs(volatile uint32_t nTime){
   TimingDelay_1mcs = nTime;
-
   while(TimingDelay_1mcs != 0);
 }
-void TimingDelay_1mcs_Decrement(void)
-{
+void TimingDelay_1mcs_Decrement(void){
   if (TimingDelay_1mcs != 0x00)
-  { 
     TimingDelay_1mcs--;
-  }
 }

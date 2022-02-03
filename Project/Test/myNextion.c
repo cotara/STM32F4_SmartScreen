@@ -13,7 +13,7 @@ uint32_t st=0;
 uint8_t endMes[3]={0xFF,0xFF,0xFF};
 static uint8_t StrBuff[64]; 
 uint8_t nowPage=0;
-
+uint8_t reqBigBuf=0;
 void USART_IRQProcessFunc(uint8_t RXc){
     toBuf(RXc);
     TIM_Cmd(TIM2, DISABLE);
@@ -38,9 +38,10 @@ void nextionEvent(void){
         else
           GPIOC->BSRRL=GPIO_Pin_13;  
       }
-      else if(fromBuf(1) == 0x00)
+      else if(fromBuf(1) == 0x00){
         nowPage = fromBuf(0);
-      
+        if (nowPage == 2) reqBigBuf=1;
+      }
      clear_RXBuffer();
 }
 
@@ -70,6 +71,14 @@ void resetFLAG_END_LINE(void){
 uint8_t getFLAG_END_LINE(void){
   return RX_FLAG_END_LINE;
 }
+
+uint8_t getReqBigBuf(void){
+  return reqBigBuf;
+}
+void resetReqBigBuf(void){
+   reqBigBuf=0;
+}
+
 uint8_t getNowPage(void){
   return nowPage;
 }

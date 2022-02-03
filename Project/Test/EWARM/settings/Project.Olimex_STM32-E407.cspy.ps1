@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\STM\STMF407 SmartScreen\Project\Test\EWARM\settings\Project.Olimex_STM32-E407.general.xcl" --backend -f "C:\STM\STMF407 SmartScreen\Project\Test\EWARM\settings\Project.Olimex_STM32-E407.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "E:\STM\STMF407 SmartScreen\Project\Test\EWARM\settings\Project.Olimex_STM32-E407.general.xcl" --backend -f "E:\STM\STMF407 SmartScreen\Project\Test\EWARM\settings\Project.Olimex_STM32-E407.driver.xcl" 
 }
 else
 {
-& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.1\common\bin\cspybat" -f "C:\STM\STMF407 SmartScreen\Project\Test\EWARM\settings\Project.Olimex_STM32-E407.general.xcl" --debug_file=$debugfile --backend -f "C:\STM\STMF407 SmartScreen\Project\Test\EWARM\settings\Project.Olimex_STM32-E407.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "E:\STM\STMF407 SmartScreen\Project\Test\EWARM\settings\Project.Olimex_STM32-E407.general.xcl" --debug_file=$debugfile --backend -f "E:\STM\STMF407 SmartScreen\Project\Test\EWARM\settings\Project.Olimex_STM32-E407.driver.xcl" 
 }
