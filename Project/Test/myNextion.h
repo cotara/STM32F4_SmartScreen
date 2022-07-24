@@ -6,3 +6,5 @@ void Nextion_SetValue_Number(char *ValueName, uint32_t Value);
 void Nextion_SetValue_String(char *ValueName, char *Value);
 uint8_t getFLAG_END_LINE(void);
 uint8_t getNowPage(void);
+uint8_t getReqBigBuf(void);
+void resetReqBigBuf(void);

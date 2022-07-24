@@ -4,14 +4,6 @@
 #include "usart_user.h"
 #include "LED_user.h"
 #include "myNextion.h"
-////////////////////////////////////////////////////////////////////////
-//extern __IO uint8_t ubRxIndex;/////////////////////
-//extern __IO uint8_t ubTxIndex;/////////////////////
-//extern __IO uint8_t ubUsartTransactionType;////////
-//extern __IO uint8_t ubUsartMode;///////////////////
-__IO uint8_t ubCounter = 0x00; /////////////////////
-extern __IO uint32_t TimeOut; //////////////////////
-///////////////////////////////////////////////////
 
 extern uint32_t delay_decrement_1mcs, strob_decrement;
 extern  uint8_t rx_buffer[RX_BUFFER_SIZE];
@@ -20,7 +12,7 @@ extern  uint8_t tx_buffer[TX_BUFFER_SIZE];
 extern  uint16_t tx_wr_index, tx_rd_index, tx_counter;
 extern uint16_t temper;
 uint32_t mcs=0;
-
+uint32_t counter=0;
 void HardFault_Handler(void) {
     /* Go to infinite loop when Hard Fault exception occurs */
     while (1) {
@@ -29,15 +21,9 @@ void HardFault_Handler(void) {
 
 void SysTick_Handler(void) {
     /* Decrement the timeout value */
-    if (TimeOut != 0x0) {
-        TimeOut--;
-    }
-    
-    if (ubCounter < 10) {
-        ubCounter++;
-    } else {
-        ubCounter = 0x00;
-    }
+    TimingDelay_1ms_Decrement();
+  
+ 
 }
 
 void USART2_IRQHandler(void) {  

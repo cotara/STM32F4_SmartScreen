@@ -2,13 +2,7 @@
 #include "transp.h"
 #include "slip.h"
 #include "main.h"
-/////////////////
-//Формат пакета: 
-//id - 2 байта
-//len - 2 байта
-//data
-//crc16 - 2 байта
-/////////////////
+#include "time_user.h"
 
 //Разметка буферов на структуры заголовков
 #define OUT_BUF_SLIP ((struct slip_hdr *)&outBuf[0])
@@ -19,11 +13,10 @@
 uint8_t outBuf[OUT_BUFFER_SIZE];                                                //Буфер, сожержащий упакованный пакет, готовый к отправке
 uint8_t inBuf[IN_BUF_SIZE];                                                     //Буфер входящих команд
 extern uint8_t dataBuffer[DATA_BUFFER_SIZE];                                    //Буфер пользователя
-
-//Очередь команд
-uint8_t slipFlag=0,inLen;
+uint16_t TxTail=0;
+uint16_t channelsOrder=0,currenChanel=0;
+uint8_t slipRecieved=0,inLen;
 uint16_t outLen;
-
 int check_crc16(uint8_t *data_p, uint16_t len);
 uint16_t _crc16(uint8_t *data_p, uint16_t len);
 
@@ -45,32 +38,77 @@ void slip_packet_receive_handler() {
 
 //Обработка пакета на транспортном уровне
 void transp_packet_receive_handler() {
-    switch(IN_BUF_TRASP->cmd) {
+    uint8_t cmd=IN_BUF_TRASP->cmd;
+    uint16_t  value=IN_BUF_TRASP->valueMSB*256+IN_BUF_TRASP->valueLSB;
+    outLen=0;
+    switch(cmd) {
       case ASK_MCU: {
           send_std_answer(ASK_MCU, OK);
           break;
       }
       case STATUS_REQUEST: {
-        if(bufferIsEmpy())
+        if(bufferIsEmpy(1)|| bufferIsEmpy(2) || bufferIsEmpy(3) || bufferIsEmpy(4))
           send_std_answer(STATUS_REQUEST, NO_DATA_READY);
-        else
-          send_std_answer(STATUS_REQUEST, DATA_READY);
-          break;
+        else{
+          send_std_answer(STATUS_REQUEST, DATA_BUFFER_SIZE);                    //Отправляем количество доступных точек
+          TxTail=0;                                                             //Начинаем буфер сначала
+
+          }
+        break;
+      }
+      case CH_ORDER: {
+        channelsOrder=value;
+        send_std_answer(CH_ORDER, OK);
+        #ifdef TEST_MODE
+                  TIM_Cmd(TIM6, ENABLE);                                        //Включаем таймер заполнения буфера
+        #endif
       }
       case REQUEST_POINTS: {
           if (bufferIsEmpy())
               send_std_answer(REQUEST_POINTS, NO_DATA_READY);
-          else {          
+          else {           
               OUT_BUF_TRASP->cmd = REQUEST_POINTS;                              //отправляем точки
-              OUT_BUF_TRASP->value = OK;
-              
-              memcpy(OUT_BUF_TRASP+TRANS_HDR_LEN, dataBuffer, DATA_BUFFER_SIZE);
-              outLen+=TRANS_HDR_LEN+DATA_BUFFER_SIZE;
+              OUT_BUF_TRASP->valueMSB = (currenChanel & 0xFF00) >> 8;           //текущий отправляемый канал             
+              OUT_BUF_TRASP->valueLSB =  currenChanel & 0xFF;;
+
+              if (DATA_BUFFER_SIZE-TxTail >= value){                            //Если точек в буфере осталось больше, чем заправшивается, то отправляем сколько запросили
+                memcpy(OUT_BUF_TRASP+1, dataBuffer+TxTail, value);              //почему-то при +1 указатель смещается на весь заголовок, как надо
+                outLen+=TRANS_HDR_LEN+value;
+                TxTail+=value;                                                  //Передвинули указатель
+                if(TxTail==DATA_BUFFER_SIZE){                                   //Отправляем последнее сообщение
+                  TxTail=0;                                                     //Закончили отправку последней точки в буфере
+                  setBufferEmpty(1);
+#ifdef TEST_MODE
+                  TIM_Cmd(TIM6, ENABLE);                                        //Включаем таймер заполнения буфера
+#endif
+                }
+              }
+              else {                                                            //На всяки случай, если запросят больше, чем есть
+                memcpy(OUT_BUF_TRASP+1, dataBuffer+TxTail, DATA_BUFFER_SIZE-TxTail);
+                outLen+=TRANS_HDR_LEN+value;
+                TxTail=0;                                                       //Закончили отправку последней точки в буфере
+                setBufferEmpty(1);
+              }
               transp_send_answer();
-              setBufferEmpty();
+              
           }
           break;
-      }  
+      } 
+      case LAZER1_SET:{
+        send_std_answer(LAZER1_SET, OK);
+        //value
+		break;
+      }
+      case LAZER2_SET:{
+        send_std_answer(LAZER2_SET, OK);
+        //value
+		break;
+      }
+      case LAZERS_SAVE:{
+        send_std_answer(LAZERS_SAVE, OK);
+        //
+		break;
+      }      
     }
 }      
 
@@ -86,7 +124,7 @@ void transp_send_answer() {
     outLen+=2;
     //Передали следующему уровню на отправку
     slip_send_packet(outBuf, outLen);
-    outLen=0;
+
 }
 
 int check_crc16(uint8_t *buff, uint16_t len) {
@@ -110,21 +148,28 @@ uint16_t _crc16(uint8_t *buff, uint16_t len) {
     return (crc);
 }
 
-void send_std_answer(uint8_t cmd, uint8_t value) {
-    OUT_BUF_TRASP->cmd = cmd;
-    OUT_BUF_TRASP->value = value;
-    outLen+=2;
+void send_std_answer(uint8_t cmd, uint16_t value) {
+    OUT_BUF_TRASP->cmd = cmd;                                                
+    OUT_BUF_TRASP->valueMSB = (value & 0xFF00) >> 8;
+    OUT_BUF_TRASP->valueLSB = value & 0xFF;
+    outLen+=3;
     transp_send_answer();
 }
 
 void setMesFlag(){
-  slipFlag=1;
+  slipRecieved=1;
 }
 void resetMesFlag(){
-  slipFlag=0;
+  slipRecieved=0;
 }
 uint8_t getMesFlag(){
-  return slipFlag;
+  return slipRecieved;
+}
+uint8_t getChannelsOrder(){
+  return channelsOrder;
+}
+void setCurrentChannel(uint16_t ch){
+  currenChanel=ch;
 }
 //Сохраяет пришедшую команду в буфер для дальнейшей обработке в main
 void addSlipPacket(uint8_t *com, uint8_t len){
